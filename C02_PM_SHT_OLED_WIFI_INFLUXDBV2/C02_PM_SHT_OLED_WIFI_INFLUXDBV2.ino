@@ -151,27 +151,21 @@ void loop() {
 
   if (HAS_CO2) {
     int CO2 = ag.getCO2_Raw();
-
-    // removes erroneouus values from initial calibration, can be removed after calibration is over
-    if (CO2 != -1 || CO2 != 516) {
       sensor.addField("co2", CO2);
       showTextRectangle("CO2", String(CO2), false, DELAY);
-    }
   }
 
   if (HAS_SHT) {
     TMP_RH result = ag.periodicFetchData();
     float caliTemp = (result.t - TEMP_OFFSET);
-    sensor.addField("temperature", caliTemp);
     sensor.addField("humidity", result.rh);
+    showTextRectangle("HMTY", String(result.rh) + "%", false, DELAY);
 
+    sensor.addField("temperature", caliTemp);
     if (FAHRRENHEIT)
       showTextRectangle("TEMP", String((caliTemp * 1.8) + 32.0, 1) + "°F", true, DELAY);
     else
       showTextRectangle("TEMP", String(caliTemp, 1) + "°C", true, DELAY);
-
-
-    showTextRectangle("HMTY", String(result.rh) + "%", false, DELAY);
   }
 
   // write point

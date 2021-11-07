@@ -66,9 +66,9 @@ Other changes in features:
 #define NTP_SERVER "time.nis.gov" // or IP address of your local NTP server
 
 // set sensors that you do not use to false
-#define HAS_PM true;
-#define HAS_CO2 true;
-#define HAS_SHT true;
+#define HAS_PM true
+#define HAS_CO2 true
+#define HAS_SHT true
 
 // Wi-Fi credentials
 String SSID = "REPLACE_WITH_YOUR_WI-FI_SSID";
@@ -78,13 +78,13 @@ String PASSWORD = "REPLACE_WITH_YOUR_WI-FI_PASSWORD";
 int DELAY = 6000;
 
 // true display is Fahrenheit on the display, false displays in Celsius
-#define FAHRRENHEIT  false;
+#define FAHRRENHEIT  false
 
 // an amount to subtract from the temperature reading
 float TEMP_OFFSET = 2.0; // I found 2 °C to be a good sweet spot
 
 // device name (_measurement), if you have multiple devices this needs to be unique
-#define DEVICE_NAME  "REPLACE_WITH_YOUR_DEVICE_NAME";
+#define DEVICE_NAME  "REPLACE_WITH_YOUR_DEVICE_NAME"
 
 // ------------------------------------------end config------------------------------------------------
 

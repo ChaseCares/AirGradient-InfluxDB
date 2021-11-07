@@ -13,8 +13,8 @@ SHT30/31 (Temperature/Humidity Sensor)
 Please install ESP8266 board manager (tested with version 3.0.0)
 
 The following libraries installed:
-"ESP8266 and ESP32 OLED driver for SSD1306 displays by ThingPulse, Fabrice Weinberg" tested with Version 4.1.0
-"InfluxDBClient for Arduino" tested with Version 3.9.0
+"ESP8266 and ESP32 OLED driver for SSD1306 displays by ThingPulse, Fabrice Weinberg" (tested with Version 4.1.0)
+"InfluxDBClient for Arduino" (tested with Version 3.9.0)
 
 Configuration:
 Please set in the code below which sensor you are using.
@@ -35,15 +35,9 @@ Other changes in features:
       the calibration value is subtracted from the reading
 */
 
-#include <InfluxDbCloud.h>
-#include <InfluxDbClient.h>
-#include <ESP8266WiFi.h>
-#include <AirGradient.h>
-#include <Wire.h>
-#include <SSD1306Wire.h>
-
 // ------------------------------------------start config-----------------------------------------------
 
+// ------ these variables require changing ------
 // InfluxDB v2 server url, e.g. https://influxdb.example.com (Use: InfluxDB UI -> Load Data -> Client Libraries)
 #define INFLUXDB_URL "REPLACE_WITH_YOUR_INFLUXDB_URL_OR_IP"
 
@@ -56,37 +50,47 @@ Other changes in features:
 // InfluxDB v2 bucket name (Use: InfluxDB UI ->  Data -> Buckets)
 #define INFLUXDB_BUCKET "REPLACE_WITH_YOUR_BUCKET"
 
-// Set timezone string according to https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
-// Examples:
-//  Pacific Time: "PST8PDT"
-//  Eastern: "EST5EDT"
-//  Japanesse: "JST-9"
-//  Central Europe: "CET-1CEST,M3.5.0,M10.5.0/3"
-#define TZ_INFO "EST+5EDT,M3.2.0/2,M11.1.0/2"
-#define NTP_SERVER "time.nis.gov" // or IP address of your local NTP server
+// device name (_measurement), if you have multiple devices this needs to be unique
+#define DEVICE_NAME "REPLACE_WITH_YOUR_DEVICE_NAME"
+
+// Wi-Fi credentials
+String SSID = "REPLACE_WITH_YOUR_WI-FI_SSID";
+String PASSWORD = "REPLACE_WITH_YOUR_WI-FI_PASSWORD";
+
+
+//  ------ these values can be left alone ------
 
 // set sensors that you do not use to false
 #define HAS_PM true
 #define HAS_CO2 true
 #define HAS_SHT true
 
-// Wi-Fi credentials
-String SSID = "REPLACE_WITH_YOUR_WI-FI_SSID";
-String PASSWORD = "REPLACE_WITH_YOUR_WI-FI_PASSWORD";
-
 // delay for how long each reading is displayed on the screen in milliseconds
 int DELAY = 6000;
 
 // true display is Fahrenheit on the display, false displays in Celsius
-#define FAHRRENHEIT  false
+#define FAHRRENHEIT false
 
-// an amount to subtract from the temperature reading
-float TEMP_OFFSET = 2.0; // I found 2 °C to be a good sweet spot
+// an amount to subtract from the temperature reading, i found 2 °C to be a good sweet spot
+float TEMP_OFFSET = 2.0;
 
-// device name (_measurement), if you have multiple devices this needs to be unique
-#define DEVICE_NAME  "REPLACE_WITH_YOUR_DEVICE_NAME"
+// Set timezone string according to https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+// Examples: Pacific Time "PST8PDT", Japanesse "JST-9", Central Europe "CET-1CEST,M3.5.0,M10.5.0/3"
+
+// Currently set to Eastern standard Time
+#define TZ_INFO "EST+5EDT,M3.2.0/2,M11.1.0/2"
+
+// use the default or the IP address of your local NTP server
+#define NTP_SERVER "time.nis.gov"
 
 // ------------------------------------------end config------------------------------------------------
+
+#include <InfluxDbClient.h>
+#include <InfluxDbCloud.h>
+#include <ESP8266WiFi.h>
+#include <SSD1306Wire.h>
+#include <AirGradient.h>
+#include <Wire.h>
 
 // data point
 Point sensor(DEVICE_NAME);
@@ -98,7 +102,7 @@ SSD1306Wire display(0x3c, SDA, SCL);
 // InfluxDB client instance with preconfigured InfluxCloud certificate
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN, InfluxDbCloud2CACert);
 
-void setup(){
+void setup() {
   Serial.begin(9600);
 
   display.init();

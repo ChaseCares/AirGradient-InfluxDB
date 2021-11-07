@@ -1,5 +1,7 @@
 # AirGradient Pushing to InfluxDB
 
+[![Arduino Compile CI](../../actions/workflows/Arduino_CI.yml/badge.svg)](../../actions/workflows/Arduino_CI.yml)
+
 AirGradients sensor kit is quite good and reasonably affordable. This Arduino sketch allows you to integrated with a locally run InfluxDB instance. This was loosely based off of AirGradient original example with everything that wasn't required for the display removed and replaced with InfluxDB. There are a couple additional features which were added as well.
 
 ## Modifications

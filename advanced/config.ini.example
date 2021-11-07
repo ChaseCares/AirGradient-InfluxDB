@@ -1,0 +1,49 @@
+; ------------------------------------------start config-----------------------------------------------
+[personal]
+    ; ------ these variables require changing ------
+    ; InfluxDB v2 server url, e.g. https://influxdb.example.com (Use: InfluxDB UI -> Load Data -> Client Libraries)
+    INFLUXDB_URL = REPLACE_WITH_YOUR_INFLUXDB_URL_OR_IP
+
+    ; InfluxDB v2 server or cloud API authentication token (Use: InfluxDB UI -> Data -> Tokens -> <select token>)
+    INFLUXDB_TOKEN = REPLACE_WITH_YOUR_TOKEN
+
+    ; InfluxDB v2 organization id (Use: InfluxDB UI -> User -> About -> Common Ids )
+    INFLUXDB_ORG = REPLACE_WITH_YOUR_ORGANIZATION_ID
+
+    ; InfluxDB v2 bucket name (Use: InfluxDB UI ->  Data -> Buckets)
+    INFLUXDB_BUCKET = REPLACE_WITH_YOUR_BUCKET
+
+    ; device name (_measurement), if you have multiple devices this needs to be unique
+    DEVICE_NAME = REPLACE_WITH_YOUR_DEVICE_NAME
+
+    ; Wi-Fi credentials
+    Wi-Fi_SSID = REPLACE_WITH_YOUR_WI-FI_SSID
+    Wi-Fi_PASSWORD = REPLACE_WITH_YOUR_WI-FI_PASSWORD
+
+
+    ;  ------ these values can be left alone ------
+
+    ; set sensors that you do not use to false
+    HAS_PM  = true
+    HAS_CO2  = true
+    HAS_SHT = true
+
+    ; delay for how long each reading is displayed on the screen in milliseconds
+    DELAY = 6000
+
+    ; true display is Fahrenheit on the display, false displays in Celsius
+    FAHRRENHEIT = false
+
+    ; an amount to subtract from the temperature reading, i found 2 °C to be a good sweet spot
+    TEMP_OFFSET = 2.0
+
+    ; Set timezone string according to https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+    ; Examples: Pacific Time "PST8PDT", Japanesse "JST-9", Central Europe "CET-1CEST,M3.5.0,M10.5.0/3"
+
+    ; Currently set to Eastern standard Time
+    TZ_INFO = EST+5EDT,M3.2.0/2,M11.1.0/2
+
+    ; use the default or the IP address of your local NTP server
+    NTP_SERVER = time.nis.gov
+
+; ------------------------------------------end config------------------------------------------------

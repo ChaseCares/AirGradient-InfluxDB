@@ -1,15 +1,32 @@
 name: Arduino_CI
+on: [push, pull_request]
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+env:
+  ARDUINO_BOARD_MANAGER_ADDITIONAL_URLS: http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 jobs:
   arduino_ci:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: Arduino-CI/action@v0.1.2
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+
+      - name: Install ESP8266
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install esp8266:esp8266
+      - name: Install AirGradient Library
+        run: |
+          arduino-cli lib install "AirGradient Air Quality Sensor"
+      - name: Install SSD1306 Display Library
+        run: |
+          arduino-cli lib install "ESP8266 and ESP32 OLED driver for SSD1306 displays"
+      - name: Install InfluxDB2 Library
+        run: |
+          arduino-cli lib install "ESP8266 Influxdb"@3.9.0
+      - name: Compile Sketch
+        run: arduino-cli compile --fqbn esp8266:esp8266:d1_mini ./C02_PM_SHT_OLED_WIFI_INFLUXDBV2/C02_PM_SHT_OLED_WIFI_INFLUXDBV2

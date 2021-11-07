@@ -38,9 +38,9 @@ Other changes in features:
 #include <InfluxDbCloud.h>
 #include <InfluxDbClient.h>
 #include <ESP8266WiFi.h>
-#include "SSD1306Wire.h"
 #include <AirGradient.h>
 #include <Wire.h>
+#include <SSD1306Wire.h>
 
 // ------------------------------------------start config-----------------------------------------------
 
@@ -62,7 +62,7 @@ Other changes in features:
 //  Eastern: "EST5EDT"
 //  Japanesse: "JST-9"
 //  Central Europe: "CET-1CEST,M3.5.0,M10.5.0/3"
-#define TZ_INFO "EST5EDT,M3.2.0,M11.1.0"
+#define TZ_INFO "EST+5EDT,M3.2.0/2,M11.1.0/2"
 #define NTP_SERVER "time.nis.gov" // or IP address of your local NTP server
 
 // set sensors that you do not use to false
@@ -98,19 +98,16 @@ SSD1306Wire display(0x3c, SDA, SCL);
 // InfluxDB client instance with preconfigured InfluxCloud certificate
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN, InfluxDbCloud2CACert);
 
-void setup() {
-  Serial.begin(115200);
+void setup(){
+  Serial.begin(9600);
 
   display.init();
   display.flipScreenVertically();
   showTextRectangle("(*^_^*)", "Starting", true, 500);
 
-  if (HAS_PM)
-    ag.PMS_Init();
-  if (HAS_CO2)
-    ag.CO2_Init();
-  if (HAS_SHT)
-    ag.TMP_RH_Init(0x44);
+  if (HAS_PM) ag.PMS_Init();
+  if (HAS_CO2) ag.CO2_Init();
+  if (HAS_SHT) ag.TMP_RH_Init(0x44);
 
   // setup and wait for Wi-Fi
   WiFi.begin(SSID, PASSWORD);

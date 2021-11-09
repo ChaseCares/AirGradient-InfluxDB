@@ -17,9 +17,12 @@ PM = 'HAS_PM true'
 CO2 = 'HAS_CO2 true'
 SHT = 'HAS_SHT true'
 
-DELAY = 'DELAY = 6000'
+ADD_TO_DB = '= 20'
+DISPLAY_INTERVAL = '= 30'
 
-FAHRRENHEIT = 'FAHRRENHEIT false'
+DATABASE_EXPORT = 'DATABASE_EXPORT true'
+
+FAHRENHEIT = 'FAHRENHEIT false'
 
 TEMP_OFFSET = 'TEMP_OFFSET = 2.0'
 
@@ -28,37 +31,42 @@ NTP_SERVER = 'time.nis.gov'
 
 def main():
 
+    info = 'personal'
+
     if not os.path.exists(PERSONAL_SKETCH):
         os.mkdir(PERSONAL_SKETCH)
 
-    config = ConfigParser()
-    config.read('./Advanced/config.ini')
+    c = ConfigParser()
+    c.read('./Advanced/config.ini')
 
     with open(SKETCH_PATH, 'r') as s:
         s = s.read()
 
-        s = s.replace(DB_URL, config['personal']['INFLUXDB_URL'])
-        s = s.replace(DB_TOKEN, config['personal']['INFLUXDB_TOKEN'])
-        s = s.replace(DB_ORG, config['personal']['INFLUXDB_ORG'])
-        s = s.replace(DB_BUCKET, config['personal']['INFLUXDB_BUCKET'])
+        s = s.replace(DB_URL, c[info]['INFLUXDB_URL'])
+        s = s.replace(DB_TOKEN, c[info]['INFLUXDB_TOKEN'])
+        s = s.replace(DB_ORG, c[info]['INFLUXDB_ORG'])
+        s = s.replace(DB_BUCKET, c[info]['INFLUXDB_BUCKET'])
 
-        s = s.replace(DEVICE_NAME, config['personal']['DEVICE_NAME'])
+        s = s.replace(DEVICE_NAME, c[info]['DEVICE_NAME'])
 
-        s = s.replace(WIFI_SSID, config['personal']['Wi-Fi_SSID'])
-        s = s.replace(WIFI_PASSWORD, config['personal']['Wi-Fi_PASSWORD'])
+        s = s.replace(WIFI_SSID, c[info]['Wi-Fi_SSID'])
+        s = s.replace(WIFI_PASSWORD, c[info]['Wi-Fi_PASSWORD'])
 
-        s = s.replace(PM, f"HAS_PM {config['personal']['HAS_PM']}")
-        s = s.replace(CO2, f"HAS_CO2 {config['personal']['HAS_CO2']}")
-        s = s.replace(SHT, f"HAS_SHT {config['personal']['HAS_SHT']}")
+        s = s.replace(PM, f"HAS_PM {c[info]['HAS_PM']}")
+        s = s.replace(CO2, f"HAS_CO2 {c[info]['HAS_CO2']}")
+        s = s.replace(SHT, f"HAS_SHT {c[info]['HAS_SHT']}")
 
-        s = s.replace(DELAY, f"DELAY = {config['personal']['DELAY']}")
+        s = s.replace(ADD_TO_DB, f"= {c[info]['ADD_TO_DB']}")
+        s = s.replace(DISPLAY_INTERVAL, f"= {c[info]['DISPLAY_INTERVAL']}")
+        s = s.replace(DATABASE_EXPORT, f"DATABASE_EXPORT {c[info]['DATABASE_EXPORT']}")
 
-        s = s.replace(FAHRRENHEIT, f"FAHRRENHEIT {config['personal']['FAHRRENHEIT']}")
 
-        s = s.replace(TEMP_OFFSET, f"TEMP_OFFSET = {config['personal']['TEMP_OFFSET']}")
+        s = s.replace(FAHRENHEIT, f"FAHRENHEIT {c[info]['FAHRENHEIT']}")
 
-        s = s.replace(TZ_INFO, config['personal']['TZ_INFO'])
-        s = s.replace(NTP_SERVER, config['personal']['NTP_SERVER'])
+        s = s.replace(TEMP_OFFSET, f"TEMP_OFFSET = {c[info]['TEMP_OFFSET']}")
+
+        s = s.replace(TZ_INFO, c[info]['TZ_INFO'])
+        s = s.replace(NTP_SERVER, c[info]['NTP_SERVER'])
 
         with open(f'./{PERSONAL_SKETCH}/{PERSONAL_SKETCH}.ino', 'w') as personal:
             personal.write(s)

@@ -231,7 +231,7 @@ void writeToDatabase() {
 	}
 
 	if (HAS_SHT) {
-		delay(80)
+		delay(80);
 		TMP_RH result = ag.periodicFetchData();
 		float caliTemp = (result.t - TEMP_OFFSET);
 		sensor.addField("humidity", result.rh);

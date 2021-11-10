@@ -111,7 +111,8 @@ class Cache {
 	private:
 		std::function<T ()> m_source; // Function to call when cached value is out of date
 		std::optional<T> m_value;
-		unsigned long m_lastAccess;   // When the data source was last accessed
+		unsigned long m_valueAge;     // How long ago m_source() was last queried for a new value
+		unsigned long m_lastCallTime; // When the getValue() function was last called
 		unsigned long m_ttl;          // How many ms out of date the source is valid for
 
 	public:
@@ -121,23 +122,23 @@ class Cache {
 
 template <class T>
 Cache<T>::Cache(std::function<T ()> source, unsigned long ttl) {
-    m_source = source;
-    m_value = {};
-    m_ttl = ttl;
+	m_source = source;
+	m_value = {};
+	m_ttl = ttl;
 }
 
 template <class T>
 T Cache<T>::getValue() {
-    unsigned long currentMS = millis();
-	if (m_value && m_lastAccess + m_ttl > currentMS) {
-		m_lastAccess = millis();
-		return *m_value;
-    }
+	const unsigned long currentTime = millis();
+	m_valueAge += currentTime - m_lastCallTime;
+	m_lastCallTime = currentTime;
 
-    m_value = m_source();
-    m_lastAccess = currentMS;
+	if (!m_value || m_valueAge > m_ttl) {
+		m_value = m_source();
+		m_valueAge = 0;
+	}
 
-    return *m_value;
+	return *m_value;
 }
 
 #if HAS_SHT

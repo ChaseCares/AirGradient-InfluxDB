@@ -32,7 +32,7 @@ The original example code was modified to add additional features.
 #include <AirGradient.h>
 #include <Wire.h>
 
-#include "DeviceConfig.h"
+#include "DeviceConfig.hpp"
 
 // Sanity check
 #if ENABLE_INFLUXDB && !ENABLE_WI_FI
@@ -129,8 +129,9 @@ Cache<T>::Cache(std::function<T ()> source, unsigned long ttl) {
 template <class T>
 T Cache<T>::getValue() {
     unsigned long currentMS = millis();
-    if (m_value && m_lastAccess - m_ttl < currentMS) {
-        return *m_value;
+	if (m_value && m_lastAccess + m_ttl > currentMS) {
+		m_lastAccess = millis();
+		return *m_value;
     }
 
     m_value = m_source();

@@ -1,4 +1,7 @@
 
+//  Before editing, copy this file to DeviceConfig.hpp
+
+
 // Device name, if you have multiple devices this needs to be unique
 #define DEVICE_NAME "REPLACE_WITH_YOUR_DEVICE_NAME"
 

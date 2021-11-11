@@ -8,8 +8,10 @@ Note, InfluxDB isn't required there is a config option that will allow you to di
 
 ## Modifications
 
-- removed captive portal, Wi-Fi credentials are now defined below
-- data is now sent to influxDB
-- added the ability to display Fahrenheit on display, celsius is still reported to the database
-- added a calibration offset for temperature (as Jeff Gerling noted temperatures are usually a bit high) the calibration value is subtracted from the reading
-- added the ability to update the database and the display independently
+- Removed captive portal, Wi-Fi credentials are now defined below
+- Data is now sent to influxDB
+- Added the ability to display Fahrenheit on display, celsius is still reported to the database
+- Added a calibration offset for temperature (as Jeff Gerling noted temperatures are usually a bit high) the calibration value is subtracted from the reading
+- Added the ability to update the database and the display independently
+- Added MQTT, with home assistant autodiscovery
+- Added ability to easily enable/disable Wi-Fi, MQTT and influxDB

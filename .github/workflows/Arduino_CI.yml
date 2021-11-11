@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@main
 
       - name: Install Arduino CLI
         uses: arduino/setup-arduino-cli@v1
@@ -28,5 +28,11 @@ jobs:
       - name: Install InfluxDB2 Library
         run: |
           arduino-cli lib install "ESP8266 Influxdb"@3.9.0
+      - name: Install Home Assistant Integration
+        run: |
+          arduino-cli lib install "home-assistant-integration"@1.3.0
+      - name: Create config header
+        run: |
+          cp ./C02_PM_SHT_OLED_WIFI_INFLUXDBV2/DeviceConfig.example.hpp ./C02_PM_SHT_OLED_WIFI_INFLUXDBV2/DeviceConfig.hpp
       - name: Compile Sketch
         run: arduino-cli compile --fqbn esp8266:esp8266:d1_mini ./C02_PM_SHT_OLED_WIFI_INFLUXDBV2/C02_PM_SHT_OLED_WIFI_INFLUXDBV2

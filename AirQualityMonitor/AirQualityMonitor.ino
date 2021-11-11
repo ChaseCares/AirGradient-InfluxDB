@@ -42,7 +42,7 @@ The original example code was modified to add additional features.
 #if ENABLE_MQTT && !ENABLE_WI_FI
 	#error Wi-Fi must be enabled for MQTT to work properly
 #endif
-#if !HAS_SHT && !HAS_PM2 && !HAS_CO2
+#if !HAS_SHT && !HAS_PM2_5 && !HAS_CO2
 	#error Must have at least one sensor enabled
 #endif
 #if !ENABLE_MQTT && !ENABLE_INFLUXDB
@@ -68,8 +68,8 @@ HADevice device;
 WiFiClient client;
 
 HAMqtt mqtt(client, device);
-	#if HAS_PM2
-HASensor MQTT_PM2("PM2");
+	#if HAS_PM2_5
+HASensor MQTT_PM2_5("PM2_5");
 	#endif
 	#if HAS_CO2
 HASensor MQTT_CO2("CO2");
@@ -145,8 +145,8 @@ T Cache<T>::getValue() {
 #if HAS_SHT
 Cache<TMP_RH> tempHumCache([]() { return ag.periodicFetchData(); }, 100);
 #endif
-#if HAS_PM2
-Cache<int> pmCache([]() { return ag.getPM2_Raw(); }, 100);
+#if HAS_PM2_5
+Cache<int> pm2_5Cache([]() { return ag.getPM2_Raw(); }, 100);
 #endif
 #if HAS_CO2
 Cache<int> co2Cache([]() { return ag.getCO2_Raw(); }, 100);
@@ -161,7 +161,7 @@ struct Task {
 const char* TaskTypeNames[] = {
 	"DisplayTemp",
 	"DisplayHum",
-	"DisplayPM2",
+	"DisplayPM2_5",
 	"DisplayCO2",
 	"WriteToDatabase",
 	"MQTTHandler",
@@ -170,7 +170,7 @@ const char* TaskTypeNames[] = {
 enum class TaskType {
 	DisplayTemp,
 	DisplayHum,
-	DisplayPM2,
+	DisplayPM2_5,
 	DisplayCO2,
 	WriteToDatabase,
 	MQTTHandler,
@@ -193,10 +193,10 @@ std::map<TaskType, Task> tasks = {
 		{ []() { showTextRectangle("HMTY", toStr(tempHumCache.getValue().rh, "%"), true); } }
 	},
 #endif
-#if HAS_PM2
+#if HAS_PM2_5
 	{
-		TaskType::DisplayPM2,
-		{ []() { showTextRectangle("PM2", toStr(pmCache.getValue()), false); } }
+		TaskType::DisplayPM2_5,
+		{ []() { showTextRectangle("PM2_5", toStr(pm2_5Cache.getValue()), false); } }
 	},
 #endif
 #if HAS_CO2
@@ -234,7 +234,7 @@ void setup() {
 	display.flipScreenVertically();
 	showTextRectangle("(*^_^*)", "Starting", true);
 
-#if (HAS_PM2)
+#if (HAS_PM2_5)
 	ag.PMS_Init();
 #endif
 #if (HAS_CO2)
@@ -244,7 +244,7 @@ void setup() {
 	ag.TMP_RH_Init(0x44);
 #endif
 
-	const unsigned int totalTasks = HAS_PM2 + HAS_CO2 + HAS_SHT * 2;
+	const unsigned int totalTasks = HAS_PM2_5 + HAS_CO2 + HAS_SHT * 2;
 
 	size_t i = 0;
 	for(auto& [taskType, task] : tasks) {
@@ -294,11 +294,11 @@ void setup() {
 
 	device.setName(DEVICE_NAME);
 
-	#if HAS_PM2
-	MQTT_PM2.setUnitOfMeasurement("PPM");
-	MQTT_PM2.setDeviceClass("pm25");
-	MQTT_PM2.setIcon("mdi:home");
-	MQTT_PM2.setName(DEVICE_NAME " Particulate");
+	#if HAS_PM2_5
+	MQTT_PM2_5.setUnitOfMeasurement("PPM");
+	MQTT_PM2_5.setDeviceClass("pm25");
+	MQTT_PM2_5.setIcon("mdi:home");
+	MQTT_PM2_5.setName(DEVICE_NAME " Particulate");
 	#endif
 
 	#if HAS_CO2
@@ -355,9 +355,9 @@ void writeToDatabase() {
 	// Clear fields for reusing the point.
 	sensor.clearFields();
 
-	#if HAS_PM2
-	int PM2 = pmCache.getValue();
-	sensor.addField("pm02", PM2);
+	#if HAS_PM2_5
+	int PM2_5 = pm2_5Cache.getValue();
+	sensor.addField("pm2.5", PM2_5);
 	#endif
 	#if HAS_CO2
 	int CO2 = co2Cache.getValue();
@@ -380,9 +380,9 @@ void writeToDatabase() {
 
 #if ENABLE_MQTT
 void mqttExporter() {
-	#if HAS_PM2
-	int PM2 = pmCache.getValue();
-	MQTT_PM2.setValue(PM2);
+	#if HAS_PM2_5
+	int PM2_5 = pm2_5Cache.getValue();
+	MQTT_PM2_5.setValue(PM2_5);
 	#endif
 	#if HAS_CO2
 	int CO2 = co2Cache.getValue();

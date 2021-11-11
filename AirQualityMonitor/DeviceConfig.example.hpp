@@ -68,7 +68,7 @@ const unsigned int DISPLAY_INTERVAL = 30;
 
 // Set sensors that you do not use to false
 #define HAS_SHT true
-#define HAS_PM2 true
+#define HAS_PM2_5 true
 #define HAS_CO2 true
 
 // Set to true to use Fahrenheit on the display, false for Celsius

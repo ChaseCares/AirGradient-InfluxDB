@@ -8,22 +8,22 @@ Note: InfluxDB isn't required, there is a config option that will allow you to d
 
 ## Getting Started
 
-## Step 0 | Prerequisites
+### Step 0 | Prerequisites
 
 - Assemble the AirGradient device - Instructions [here](https://www.airgradient.com/diy/)
 - Install Arduino - Download [here](https://www.arduino.cc/en/software)
 - Download this repository - Click the green “Code” button and then “Download ZIP”
 - Unzip the folder, navigate to the AirQualityMonitor and copy the example config file. Paste it into the same directory and rename it `DeviceConfig`
 
-## Step 1 | Settting up Arduino
+### Step 1 | Settting up Arduino
 
-### Add ESP8266 platform information
+**Add ESP8266 platform information.**
 
 - Open the Arduino sketch file. Then open the Preferences menu, and add `http://arduino.esp8266.com/stable/package_esp8266com_index.json` to *Additional Board Manager URLs* [Image](./Images/Preferences.png)
 - Open the Board Manager and search for and install: `esp8266` by `ESP8266 comunity` [Image](./Images/BoardManager.png)
 - Load the board preferences by navigating to Tool -> Board: -> ESP8266 Boards, then select `LOLIN(WEMOS) D1 R2 & mini` [Image](./Images/BM-D1mini.png)
 
-### Add the required libraries
+**Add the required libraries.**
 
 - Open library manager, search for and install: `AirGradient Air Quality Sensor` [Image](./Images/LM-AirGradient.png)
 
@@ -40,7 +40,7 @@ Only needed if you enable MQTT
 
 - Search for and install: `arduino-home-assistant` by Dawid Chyrzynski [Image](./Images/LM-HA.png) You will be asked if you would like to install dependencies, select *Install all* [Image](./Images/LM-Dependencies.png)
 
-## Step 2 | Configuration
+### Step 2 | Configuration
 
 Navigate to DeviceConfig.hpp tab and enable any features you would like to use. Then fill out their corresponding credentials.
 

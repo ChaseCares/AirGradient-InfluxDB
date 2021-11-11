@@ -38,7 +38,7 @@ Only needed if you enable Influxdb
 
 Only needed if you enable MQTT
 
-- Search for and install: `arduino-home-assistant` by Dawid Chyrzynski [Image](./Images/LM-HA.png) You will be asked if you would like to install dependencies, select *Install all* [Image](./Images/LM-Dependencies.png)
+- Search for and install: `home-assistant-integration` by Dawid Chyrzynski [Image](./Images/LM-HA.png) You will be asked if you would like to install dependencies, select *Install all* [Image](./Images/LM-Dependencies.png)
 
 ### Step 2 | Configuration
 

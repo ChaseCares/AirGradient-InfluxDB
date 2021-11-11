@@ -196,7 +196,7 @@ std::map<TaskType, Task> tasks = {
 #if HAS_PM2_5
 	{
 		TaskType::DisplayPM2_5,
-		{ []() { showTextRectangle("PM2_5", toStr(pm2_5Cache.getValue()), false); } }
+		{ []() { showTextRectangle("PM2", toStr(pm2_5Cache.getValue()), false); } }
 	},
 #endif
 #if HAS_CO2

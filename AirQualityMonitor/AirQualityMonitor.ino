@@ -4,8 +4,9 @@ For build instructions please visit https://www.airgradient.com/diy/
 Please install ESP8266 board manager (tested with version 3.0.0)
 
 The following libraries installed:
-"ESP8266 and ESP32 OLED driver for SSD1306 displays by ThingPulse, Fabrice Weinberg" (tested with Version 4.1.0)
-"InfluxDBClient for Arduino" (tested with Version 3.9.0)
+"ESP8266 and ESP32 OLED driver for SSD1306 displays" by ThingPulse, Fabrice Weinberg (tested with Version 4.2.1)
+"ESP8266 Influxdb" by Tobias Schürg, InfluxData (tested with Version 3.9.0)
+"arduino-home-assistant" by Dawid Chyrzynski (tested with Version 1.3.0)
 
 
 MIT License

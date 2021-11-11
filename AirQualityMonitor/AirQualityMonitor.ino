@@ -269,20 +269,15 @@ void setup() {
 		Serial.print(".");
 	}
 
-	showTextRectangle("Host-", "name:", true);
-	showTextRectangle(WiFi.hostname().substring(0, 4), WiFi.hostname().substring(4, 10), true);
-
 	Serial.println("");
 	Serial.print("Connected to ");
 	Serial.println(WI_FI_SSID);
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
-	delay(5000);
 	Serial.print("MAC address: ");
 	Serial.println(WiFi.macAddress());
 	Serial.print("Hostname: ");
 	Serial.println(String(WiFi.hostname()));
-	delay(5000);
 #endif
 
 	Serial.println("");

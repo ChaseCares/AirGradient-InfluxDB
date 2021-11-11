@@ -1,13 +1,12 @@
 /*
 For build instructions please visit https://www.airgradient.com/diy/
 
-Please install ESP8266 board manager (tested with version 3.0.0)
+Install ESP8266 from the board manager (tested with version 3.0.0)
 
 The following libraries installed:
 "ESP8266 and ESP32 OLED driver for SSD1306 displays" by ThingPulse, Fabrice Weinberg (tested with Version 4.2.1)
 "ESP8266 Influxdb" by Tobias Schürg, InfluxData (tested with Version 3.9.0)
 "arduino-home-assistant" by Dawid Chyrzynski (tested with Version 1.3.0)
-
 
 MIT License
 
@@ -153,9 +152,9 @@ Cache<int> co2Cache([]() { return ag.getCO2_Raw(); }, 100);
 #endif
 
 struct Task {
-	void (*m_callback)();       // Function to execute every time the timeout expires
-	unsigned long m_timeout;    // How much time is left before the callback should be executed
-	unsigned long m_interval;   // What to reset the timeout to once it expires
+	void (*m_callback)();	// Function to execute every time the timeout expires
+	unsigned long m_timeout;	// How much time is left before the callback should be executed
+	unsigned long m_interval;	// What to reset the timeout to once it expires
 };
 
 const char* TaskTypeNames[] = {
@@ -265,7 +264,7 @@ void setup() {
 
 	showTextRectangle("Setting", "up WiFi", true);
 	while (WiFi.status() != WL_CONNECTED) {
-		delay(100);
+		delay(300);
 		Serial.print(".");
 	}
 
@@ -277,12 +276,12 @@ void setup() {
 	Serial.println(WI_FI_SSID);
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
-	delay(5000);
+	delay(3000);
 	Serial.print("MAC address: ");
 	Serial.println(WiFi.macAddress());
 	Serial.print("Hostname: ");
 	Serial.println(String(WiFi.hostname()));
-	delay(5000);
+	delay(3000);
 #endif
 
 	Serial.println("");

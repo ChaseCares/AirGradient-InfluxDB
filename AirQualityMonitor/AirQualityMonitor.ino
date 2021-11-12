@@ -348,7 +348,9 @@ void loop() {
 			task.m_timeout -= deltaMS;
 		}
 	}
+#if ENABLE_MQTT
 	mqtt.loop();
+#endif
 }
 
 #if ENABLE_INFLUXDB

@@ -297,26 +297,26 @@ void setup() {
 	#if HAS_PM2_5
 	MQTT_PM2_5.setUnitOfMeasurement("PPM");
 	MQTT_PM2_5.setDeviceClass("pm25");
-	MQTT_PM2_5.setIcon("mdi:home");
+	MQTT_PM2_5.setIcon("mdi:air-filter");
 	MQTT_PM2_5.setName(DEVICE_NAME " Particulate");
 	#endif
 
 	#if HAS_CO2
 	MQTT_CO2.setUnitOfMeasurement("µg/m3");
 	MQTT_CO2.setDeviceClass("carbon_dioxide");
-	MQTT_CO2.setIcon("mdi:home");
+	MQTT_CO2.setIcon("mdi:molecule-co2");
 	MQTT_CO2.setName(DEVICE_NAME " Carbon Dioxide");
 	#endif
 
 	#if HAS_SHT
 	MQTT_temperature.setUnitOfMeasurement("°C");
 	MQTT_temperature.setDeviceClass("temperature");
-	MQTT_temperature.setIcon("mdi:home");
+	MQTT_temperature.setIcon("mdi:thermometer");
 	MQTT_temperature.setName(DEVICE_NAME " Temperature");
 
 	MQTT_humidity.setUnitOfMeasurement("%");
 	MQTT_humidity.setDeviceClass("humidity");
-	MQTT_humidity.setIcon("mdi:home");
+	MQTT_humidity.setIcon("mdi:water-percent");
 	MQTT_humidity.setName(DEVICE_NAME " Humidity");
 	#endif
 

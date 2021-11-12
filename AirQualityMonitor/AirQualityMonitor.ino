@@ -348,6 +348,7 @@ void loop() {
 			task.m_timeout -= deltaMS;
 		}
 	}
+	mqtt.loop();
 }
 
 #if ENABLE_INFLUXDB
@@ -394,8 +395,6 @@ void mqttExporter() {
 	MQTT_temperature.setValue(caliTemp);
 	MQTT_humidity.setValue(result.rh);
 	#endif
-
-	mqtt.loop();
 }
 #endif
 

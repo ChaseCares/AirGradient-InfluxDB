@@ -146,7 +146,7 @@ T Cache<T>::getValue() {
 Cache<TMP_RH> tempHumCache([]() { return ag.periodicFetchData(); }, 100);
 #endif
 #if HAS_PM2_5
-Cache<int> pm2_5Cache([]() { return ag.getPM2_Raw(); }, 100);
+Cache<int> pm2_5Cache([]() { return ag.getPM2_Raw(); }, 300);
 #endif
 #if HAS_CO2
 Cache<int> co2Cache([]() { return ag.getCO2_Raw(); }, 100);

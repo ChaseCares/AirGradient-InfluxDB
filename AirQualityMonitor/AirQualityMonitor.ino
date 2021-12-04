@@ -295,14 +295,14 @@ void setup() {
 	device.setName(DEVICE_NAME);
 
 	#if HAS_PM2_5
-	MQTT_PM2_5.setUnitOfMeasurement("PPM");
+	MQTT_PM2_5.setUnitOfMeasurement("µg/m3");
 	MQTT_PM2_5.setDeviceClass("pm25");
 	MQTT_PM2_5.setIcon("mdi:air-filter");
 	MQTT_PM2_5.setName(DEVICE_NAME " Particulate");
 	#endif
 
 	#if HAS_CO2
-	MQTT_CO2.setUnitOfMeasurement("µg/m3");
+	MQTT_CO2.setUnitOfMeasurement("PPM");
 	MQTT_CO2.setDeviceClass("carbon_dioxide");
 	MQTT_CO2.setIcon("mdi:molecule-co2");
 	MQTT_CO2.setName(DEVICE_NAME " Carbon Dioxide");

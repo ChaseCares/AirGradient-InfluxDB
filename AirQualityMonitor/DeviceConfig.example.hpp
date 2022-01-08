@@ -74,8 +74,13 @@
 #define HAS_PM2_5 true
 #define HAS_CO2 true
 
-// Frequency in seconds to switch between displayed sensor values
-const unsigned int DISPLAY_INTERVAL = 30;
+// If you only use it for logging, you can turn the display off so it's less disruptive
+#define ENABLE_DISPLAY true
+
+#if ENABLE_DISPLAY
+	// Frequency in seconds to switch between displayed sensor values
+	const unsigned int DISPLAY_INTERVAL = 30;
+#endif
 
 #if HAS_SHT
 	// Set to true to use Fahrenheit on the display, false for Celsius

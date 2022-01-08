@@ -65,12 +65,14 @@ HASensor MQTT_temperature("Temperature");
 HASensor MQTT_humidity("Humidity");
 	#endif
 
-void mqttExporter();
+void publishToMQTT();
 #endif
 
 AirGradient ag = AirGradient();
 
+#if ENABLE_DISPLAY
 SSD1306Wire display(0x3c, SDA, SCL);
+#endif
 
 unsigned long elapsedMs = 0;
 const unsigned int MS = 1000;
@@ -87,11 +89,13 @@ InfluxDBClient influxClient(
 #endif
 
 void writeToDatabase();
+#if ENABLE_DISPLAY
 void showTextRectangle(const char* line1, const char* line2, boolean smallText);
 void showTextRectangle(std::string line1, std::string line2, boolean smallText);
 void showTextRectangle(String line1, String line2, boolean smallText);
 template <typename... Args>
 std::string toStr(Args &&...args);
+#endif
 
 template <class T>
 class Cache {
@@ -139,86 +143,75 @@ Cache<int> co2Cache([]() { return ag.getCO2_Raw(); }, 100);
 #endif
 
 struct Task {
-	void (*m_callback)();       // Function to execute every time the timeout expires
-	unsigned long m_timeout;    // How much time is left before the callback should be executed
-	unsigned long m_interval;   // What to reset the timeout to once it expires
+	void (*m_callback)();     // Function to execute every time the timeout expires
+	unsigned long m_timeout;  // How much time is left before the callback should be executed
+	unsigned long m_interval; // What to reset the timeout to once it expires
 };
 
-const char* TaskTypeNames[] = {
-	"DisplayTemp",
-	"DisplayHum",
-	"DisplayPM2_5",
-	"DisplayCO2",
-	"WriteToDatabase",
-	"MQTTHandler",
-};
+const size_t TOTAL_TASKS = HAS_PM2_5 + HAS_CO2 + HAS_SHT * 2 + ENABLE_INFLUXDB + ENABLE_MQTT;
 
-enum class TaskType {
-	DisplayTemp,
-	DisplayHum,
-	DisplayPM2_5,
-	DisplayCO2,
-	WriteToDatabase,
-	MQTTHandler,
-};
+#if ENABLE_DISPLAY
+// Slight hack to be able to compute the display timesharing at compile time.
+// __COUNTER__ increments every time it's used, however it seems like other library code also
+// uses it, so it doesn't start at zero, meaning we need to keep the initial value around to
+// subtract with.
+const int INTIAL_COUNTER_VAL = __COUNTER__ + 1;
+#endif
 
-std::map<TaskType, Task> tasks = {
-#if HAS_SHT
+Task tasks[TOTAL_TASKS] = {
+#if HAS_SHT && ENABLE_DISPLAY
 	{
-		TaskType::DisplayTemp,
-		{
-			[]() {
-				float caliTemp = tempHumCache.getValue().t - TEMP_OFFSET;
-				auto tempStr = FAHRENHEIT ? toStr(caliTemp*1.8+32.0, "°F") : toStr(caliTemp, "°C");
-				showTextRectangle("TEMP", tempStr, true);
-			}
-		}
+		.m_callback = []() {
+			float caliTemp = tempHumCache.getValue().t - TEMP_OFFSET;
+			auto tempStr = FAHRENHEIT ? toStr(caliTemp*1.8+32.0, "°F") : toStr(caliTemp, "°C");
+			showTextRectangle("TEMP", tempStr, true);
+		},
+		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
+		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 	{
-		TaskType::DisplayHum,
-		{ []() { showTextRectangle("HMTY", toStr(tempHumCache.getValue().rh, "%"), true); } }
+		.m_callback = []() { showTextRectangle("HMTY", toStr(tempHumCache.getValue().rh, "%"), true); },
+		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
+		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 #endif
-#if HAS_PM2_5
+#if HAS_PM2_5 && ENABLE_DISPLAY
 	{
-		TaskType::DisplayPM2_5,
-		{ []() { showTextRectangle("PM2", toStr(pm2_5Cache.getValue()), false); } }
+		.m_callback = []() { showTextRectangle("PM2", toStr(pm2_5Cache.getValue()), false); },
+		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
+		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 #endif
-#if HAS_CO2
+#if HAS_CO2 && ENABLE_DISPLAY
 	{
-		TaskType::DisplayCO2,
-		{ []() { showTextRectangle("CO2", toStr(co2Cache.getValue()), false); } }
+		.m_callback = []() { showTextRectangle("CO2", toStr(co2Cache.getValue()), false); },
+		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
+		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 #endif
 #if ENABLE_INFLUXDB
 	{
-		TaskType::WriteToDatabase,
-		{
-			writeToDatabase,
-			ADD_TO_INFLUXDB_INTERVAL * MS,
-			ADD_TO_INFLUXDB_INTERVAL * MS
-		}
+		.m_callback = writeToDatabase,
+		.m_timeout  = ADD_TO_INFLUXDB_INTERVAL * MS,
+		.m_interval = ADD_TO_INFLUXDB_INTERVAL * MS,
 	},
 #endif
 #if ENABLE_MQTT
 	{
-		TaskType::MQTTHandler,
-		{
-			mqttExporter,
-			ADD_TO_MQTT_INTERVAL * MS,
-			ADD_TO_MQTT_INTERVAL * MS,
-		}
+		.m_callback = publishToMQTT,
+		.m_timeout  = ADD_TO_MQTT_INTERVAL * MS,
+		.m_interval = ADD_TO_MQTT_INTERVAL * MS,
 	}
 #endif
 };
 
 void setup() {
 	Serial.begin(9600);
-
+	#if ENABLE_DISPLAY
 	display.init();
 	display.flipScreenVertically();
 	showTextRectangle("(*^_^*)", "Starting", true);
+	#endif
 
 #if (HAS_PM2_5)
 	ag.PMS_Init();
@@ -230,26 +223,14 @@ void setup() {
 	ag.TMP_RH_Init(0x44);
 #endif
 
-	const unsigned int totalTasks = HAS_PM2_5 + HAS_CO2 + HAS_SHT * 2;
-
-	size_t i = 0;
-	for(auto& [taskType, task] : tasks) {
-		switch(taskType) {
-			case TaskType::WriteToDatabase:
-			case TaskType::MQTTHandler:
-				continue;
-			default :
-				task.m_timeout  = DISPLAY_INTERVAL * MS * i++;
-				task.m_interval = DISPLAY_INTERVAL * MS * totalTasks;
-		}
-	}
-
 #if ENABLE_WI_FI
 	// Setup and wait for Wi-Fi
 	WiFi.begin(WI_FI_SSID, WI_FI_PASSWORD);
 	Serial.println("");
 
+	#if ENABLE_DISPLAY
 	showTextRectangle("Setting", "up WiFi", true);
+	#endif
 	while (WiFi.status() != WL_CONNECTED) {
 		delay(100);
 		Serial.print(".");
@@ -322,11 +303,9 @@ void loop() {
 	const unsigned long deltaMS = currentMS - elapsedMs;
 	elapsedMs = currentMS;
 
-	for (auto &[taskType, task] : tasks) {
+	for (auto& task : tasks) {
 		// If it underflows around when subtracting, that means it would have been negative
 		if (task.m_timeout - deltaMS > task.m_timeout) {
-			Serial.print("Running task: ");
-			Serial.println(TaskTypeNames[(int)taskType]);
 			task.m_callback();
 			// Take into consideration how late we were to prevent drift
 			task.m_timeout = task.m_interval + (task.m_timeout - deltaMS);
@@ -368,7 +347,7 @@ void writeToDatabase() {
 #endif
 
 #if ENABLE_MQTT
-void mqttExporter() {
+void publishToMQTT() {
 	#if HAS_PM2_5
 	int PM2_5 = pm2_5Cache.getValue();
 	MQTT_PM2_5.setValue(PM2_5);
@@ -386,6 +365,7 @@ void mqttExporter() {
 }
 #endif
 
+#if ENABLE_DISPLAY
 void showTextRectangle(String line1, String line2, boolean smallText) {
 	display.clear();
 	display.setTextAlignment(TEXT_ALIGN_LEFT);
@@ -409,3 +389,4 @@ std::string toStr(Args &&...args) {
 	(ostr << std::dec << ... << args);
 	return ostr.str();
 }
+#endif

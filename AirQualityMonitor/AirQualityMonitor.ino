@@ -154,7 +154,7 @@ struct Task {
 	unsigned long m_interval; // What to reset the timeout to once it expires
 };
 
-const size_t TOTAL_TASKS = HAS_PM2_5 + HAS_CO2 + HAS_SHT * 2 + ENABLE_INFLUXDB + ENABLE_MQTT;
+const size_t TOTAL_TASKS = (HAS_PM2_5 + HAS_CO2 + HAS_SHT * 2) * ENABLE_DISPLAY + ENABLE_INFLUXDB + ENABLE_MQTT;
 
 #if ENABLE_DISPLAY
 // Slight hack to be able to compute the display timesharing at compile time.

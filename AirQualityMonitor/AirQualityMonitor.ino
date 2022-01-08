@@ -313,6 +313,14 @@ void loop() {
 			task.m_callback();
 			// Take into consideration how late we were to prevent drift
 			task.m_timeout = task.m_interval + (task.m_timeout - deltaMS);
+			// In the (hopefully) rare case that we were so late as to need to run it in
+			// (what would have been) negative milliseconds next time, we just have it
+			// run next time it would line up.
+			// This unfortunately means it might not execute as many times on average
+			// as you might expect given its interval, but the alternative is storing
+			// an additional signed "catch up" counter and dealing with the edge cases
+			// with that
+			while (task.m_timeout > task.m_interval) task.m_timeout += task.m_interval;
 		} else {
 			task.m_timeout -= deltaMS;
 		}

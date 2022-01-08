@@ -133,13 +133,20 @@ T Cache<T>::getValue() {
 }
 
 #if HAS_SHT
-Cache<TMP_RH> tempHumCache([]() { return ag.periodicFetchData(); }, 100);
+#define SHT_CACHE_TIME 1000
+Cache<TMP_RH> tempHumCache([]() { return ag.periodicFetchData(); }, SHT_CACHE_TIME);
+inline float getTemperature() { return tempHumCache.getValue().t; }
+inline int getHumidity() { return tempHumCache.getValue().rh; }
 #endif
 #if HAS_PM2_5
-Cache<int> pm2_5Cache([]() { return ag.getPM2_Raw(); }, 300);
+#define PM2_5_CACHE_TIME 3000
+Cache<int> pm2_5Cache([]() { return ag.getPM2_Raw(); }, PM2_5_CACHE_TIME);
+inline int getPM2_5() { return pm2_5Cache.getValue(); }
 #endif
 #if HAS_CO2
-Cache<int> co2Cache([]() { return ag.getCO2_Raw(); }, 100);
+#define CO2_CACHE_TIME 1000
+Cache<int> co2Cache([]() { return ag.getCO2_Raw(); }, CO2_CACHE_TIME);
+inline int getCO2() { return co2Cache.getValue(); }
 #endif
 
 struct Task {
@@ -162,7 +169,7 @@ Task tasks[TOTAL_TASKS] = {
 #if HAS_SHT && ENABLE_DISPLAY
 	{
 		.m_callback = []() {
-			float caliTemp = tempHumCache.getValue().t - TEMP_OFFSET;
+			float caliTemp = getTemperature() - TEMP_OFFSET;
 			auto tempStr = FAHRENHEIT ? toStr(caliTemp*1.8+32.0, "°F") : toStr(caliTemp, "°C");
 			showTextRectangle("TEMP", tempStr, true);
 		},
@@ -170,21 +177,21 @@ Task tasks[TOTAL_TASKS] = {
 		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 	{
-		.m_callback = []() { showTextRectangle("HMTY", toStr(tempHumCache.getValue().rh, "%"), true); },
+		.m_callback = []() { showTextRectangle("HMTY", toStr(getHumidity(), "%"), true); },
 		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
 		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 #endif
 #if HAS_PM2_5 && ENABLE_DISPLAY
 	{
-		.m_callback = []() { showTextRectangle("PM2", toStr(pm2_5Cache.getValue()), false); },
+		.m_callback = []() { showTextRectangle("PM2", toStr(getPM2_5()), false); },
 		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
 		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
 #endif
 #if HAS_CO2 && ENABLE_DISPLAY
 	{
-		.m_callback = []() { showTextRectangle("CO2", toStr(co2Cache.getValue()), false); },
+		.m_callback = []() { showTextRectangle("CO2", toStr(getCO2()), false); },
 		.m_timeout  = DISPLAY_INTERVAL * MS * (__COUNTER__ - INTIAL_COUNTER_VAL),
 		.m_interval = DISPLAY_INTERVAL * MS * TOTAL_TASKS,
 	},
@@ -324,18 +331,14 @@ void writeToDatabase() {
 	sensor.clearFields();
 
 	#if HAS_PM2_5
-	int PM2_5 = pm2_5Cache.getValue();
-	sensor.addField("pm2.5", PM2_5);
+	sensor.addField("pm2.5", getPM2_5());
 	#endif
 	#if HAS_CO2
-	int CO2 = co2Cache.getValue();
-	sensor.addField("co2", CO2);
+	sensor.addField("co2", getCO2());
 	#endif
 	#if HAS_SHT
-	TMP_RH result = tempHumCache.getValue();
-	float caliTemp = (result.t - TEMP_OFFSET);
-	sensor.addField("humidity", result.rh);
-	sensor.addField("temperature", caliTemp);
+	sensor.addField("humidity", getHumidity());
+	sensor.addField("temperature", getTemperature() - TEMP_OFFSET);
 	#endif
 
 	// Write point
@@ -349,18 +352,16 @@ void writeToDatabase() {
 #if ENABLE_MQTT
 void publishToMQTT() {
 	#if HAS_PM2_5
-	int PM2_5 = pm2_5Cache.getValue();
+	int PM2_5 = getPM2_5();
 	MQTT_PM2_5.setValue(PM2_5);
 	#endif
 	#if HAS_CO2
-	int CO2 = co2Cache.getValue();
+	int CO2 = getCO2();
 	MQTT_CO2.setValue(CO2);
 	#endif
 	#if HAS_SHT
-	TMP_RH result = tempHumCache.getValue();
-	float caliTemp = (result.t - TEMP_OFFSET);
-	MQTT_temperature.setValue(caliTemp);
-	MQTT_humidity.setValue(result.rh);
+	MQTT_temperature.setValue(getTemperature() - TEMP_OFFSET);
+	MQTT_humidity.setValue(getHumidity());
 	#endif
 }
 #endif

@@ -83,8 +83,7 @@ InfluxDBClient influxClient(
 	INFLUXDB_URL,
 	INFLUXDB_ORG,
 	INFLUXDB_BUCKET,
-	INFLUXDB_TOKEN,
-	InfluxDbCloud2CACert
+	INFLUXDB_TOKEN
 );
 #endif
 
@@ -244,8 +243,7 @@ void setup() {
 	}
 
 	Serial.println("");
-	Serial.print("Connected to ");
-	Serial.println(WI_FI_SSID);
+	Serial.print("Connected to " WI_FI_SSID);
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
 	Serial.print("MAC address: ");
@@ -254,9 +252,8 @@ void setup() {
 	Serial.println(String(WiFi.hostname()));
 #endif
 
-	Serial.println("");
-
 #if ENABLE_INFLUXDB
+	Serial.println("");
 	timeSync(TZ_INFO, NTP_SERVER);
 #endif
 

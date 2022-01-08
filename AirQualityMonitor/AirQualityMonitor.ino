@@ -35,20 +35,6 @@ The original example code was modified to add additional features.
 
 #include "DeviceConfig.hpp"
 
-// Sanity check
-#if ENABLE_INFLUXDB && !ENABLE_WI_FI
-	#error Wi-Fi must be enabled for InfluxDB to work properly
-#endif
-#if ENABLE_MQTT && !ENABLE_WI_FI
-	#error Wi-Fi must be enabled for MQTT to work properly
-#endif
-#if !HAS_SHT && !HAS_PM2_5 && !HAS_CO2
-	#error Must have at least one sensor enabled
-#endif
-#if !ENABLE_MQTT && !ENABLE_INFLUXDB
-	#define ENABLE_WI_FI false
-#endif
-
 #if ENABLE_WI_FI
 	#include <ESP8266WiFi.h>
 #endif

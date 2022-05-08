@@ -29,7 +29,6 @@ Note: InfluxDB isn't required, there is a config option that will allow you to d
 
 If only using sensors, with no connectivity skip to step two
 
-- Search for and install: `AirGradient Air Quality Sensor` by AirGradient [Image](./Images/LM-AirGradient.png)
 - Search for and install: `ESP8266 and ESP32 OLED driver for SSD1306 displays` by ThingPulse [Image](./Images/LM-OLED.png)
 
 Only needed if you enable Influxdb
